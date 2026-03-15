@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { API_URL } from '../config'
 
 function Gallery() {
   const { t } = useTranslation()
@@ -9,7 +10,7 @@ function Gallery() {
   const [images, setImages] = useState([])
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/gallery')
+    fetch(`${API_URL}/gallery`)
       .then(res => res.json())
       .then(data => setImages(data || []))
       .catch(err => console.error("Error fetching gallery:", err))

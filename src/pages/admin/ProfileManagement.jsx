@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { API_URL } from '../../config';
 
 const ProfileManagement = () => {
   const { token, admin } = useAuth();
@@ -27,7 +28,7 @@ const ProfileManagement = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/profile', {
+      const res = await fetch(`${API_URL}/auth/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

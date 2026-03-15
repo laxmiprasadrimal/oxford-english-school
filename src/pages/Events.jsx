@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { API_URL } from '../config'
 const EventCard = ({ event, showViewDetails = true, index, t, onOpenModal }) => (
   <div className={`event-card ${index % 2 === 0 ? 'reveal-left' : 'reveal-right'}`} onClick={() => onOpenModal(event)}>
     <div className="event-date">
@@ -41,7 +42,7 @@ function Events() {
   const [pastEvents, setPastEvents] = useState([])
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/events')
+    fetch(`${API_URL}/events`)
       .then(res => res.json())
       .then(data => {
         setUpcomingEvents(data.upcomingEvents || [])

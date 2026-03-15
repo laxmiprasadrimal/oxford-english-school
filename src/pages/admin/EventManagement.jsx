@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { API_URL } from '../../config';
 
 const EventManagement = () => {
   const { token } = useAuth();
@@ -14,7 +15,7 @@ const EventManagement = () => {
 
   const fetchEvents = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/events');
+      const res = await fetch(`${API_URL}/events`);
       const data = await res.json();
       setEvents({ upcoming: data.upcomingEvents || [], past: data.pastEvents || [] });
     } catch (err) {
@@ -42,7 +43,7 @@ const EventManagement = () => {
     });
 
     try {
-      const url = editingId ? `http://localhost:5000/api/events/${editingId}` : 'http://localhost:5000/api/events';
+      const url = editingId ? `${API_URL}/events/${editingId}` : `${API_URL}/events`;
       const method = editingId ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
@@ -84,7 +85,7 @@ const EventManagement = () => {
   const handleDelete = async (id) => {
     if(!window.confirm('Are you sure you want to delete this event?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/events/${id}`, {
+      const res = await fetch(`${API_URL}/events/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

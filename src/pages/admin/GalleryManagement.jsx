@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { API_URL } from '../../config';
 
 const GalleryManagement = () => {
   const { token } = useAuth();
@@ -14,7 +15,7 @@ const GalleryManagement = () => {
 
   const fetchGallery = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/gallery');
+      const res = await fetch(`${API_URL}/gallery`);
       const data = await res.json();
       setGalleryItems(data || []);
     } catch (err) {
@@ -45,7 +46,7 @@ const GalleryManagement = () => {
     });
 
     try {
-      const res = await fetch('http://localhost:5000/api/gallery', {
+      const res = await fetch(`${API_URL}/gallery`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -68,7 +69,7 @@ const GalleryManagement = () => {
   const handleDelete = async (id) => {
     if(!window.confirm('Are you sure you want to delete this image?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/gallery/${id}`, {
+      const res = await fetch(`${API_URL}/gallery/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -82,7 +83,7 @@ const GalleryManagement = () => {
     if(selectedIds.length === 0) return;
     if(!window.confirm(`Are you sure you want to delete ${selectedIds.length} image(s)?`)) return;
     try {
-      const res = await fetch('http://localhost:5000/api/gallery/bulk-delete', {
+      const res = await fetch(`${API_URL}/gallery/bulk-delete`, {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${token}`,

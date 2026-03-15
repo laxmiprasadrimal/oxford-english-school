@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { API_URL } from '../../config';
 
 const Dashboard = () => {
   const { token } = useAuth();
@@ -10,8 +11,8 @@ const Dashboard = () => {
     const fetchStats = async () => {
       try {
         const [eventsRes, galleryRes] = await Promise.all([
-          fetch('http://localhost:5000/api/events'),
-          fetch('http://localhost:5000/api/gallery')
+          fetch(`${API_URL}/events`),
+          fetch(`${API_URL}/gallery`)
         ]);
         
         const eventsData = await eventsRes.json();
