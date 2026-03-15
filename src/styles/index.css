@@ -1,5 +1,6 @@
 /* ==== Google Fonts (Poppins) ==== */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import './admin.css';
 
 /* ==== CSS Variables ==== */
 :root {
@@ -506,9 +507,9 @@ header.sticky {
 
 /* ==== Gallery Page ==== */
 .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    display: block;
+    column-count: 3;
+    column-gap: 1.5rem;
 }
 
 .gallery-item {
@@ -517,13 +518,16 @@ header.sticky {
     border-radius: 10px;
     box-shadow: var(--card-shadow);
     cursor: pointer;
-    height: 250px;
+    margin-bottom: 1.5rem;
+    break-inside: avoid;
+    display: inline-block;
+    width: 100%;
 }
 
 .gallery-item img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    display: block;
     transition: transform 0.4s ease;
 }
 
@@ -1422,6 +1426,10 @@ html {
     .navbar {
         padding: 0 1.5rem;
     }
+
+    .gallery-grid {
+        column-count: 2;
+    }
 }
 
 @media (max-width: 768px) {
@@ -1506,5 +1514,9 @@ html {
 
     .hero-content h1 {
         font-size: 2rem;
+    }
+
+    .gallery-grid {
+        column-count: 1;
     }
 }

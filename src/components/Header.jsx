@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useAuth } from '../context/AuthContext'
 
 function Header() {
   const { t, i18n } = useTranslation()
+  const { isAuthenticated } = useAuth()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
   const [sticky, setSticky] = useState(false)
@@ -65,6 +67,13 @@ function Header() {
           <span className="lang-divider">|</span>
           <span className={`lang-en ${currentLang === 'en' ? 'active' : ''}`}>EN</span>
         </div>
+        
+        {isAuthenticated && (
+          <Link to="/admin" style={{ marginLeft: '15px', color: 'var(--primary-color)', fontSize: '1.2rem' }} title="Admin Dashboard">
+            <i className="fa-solid fa-user-cog"></i>
+          </Link>
+        )}
+
         <div 
           className={`hamburger ${menuOpen ? 'active' : ''}`} 
           onClick={() => setMenuOpen(!menuOpen)}

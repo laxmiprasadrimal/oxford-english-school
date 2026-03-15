@@ -1,0 +1,144 @@
+/* ==== Admin Panel Styling ==== */
+
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+  background: var(--light-bg);
+}
+
+.admin-sidebar {
+  width: 250px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  position: fixed;
+  height: 100vh;
+  z-index: 1005;
+}
+
+.sidebar-header {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.sidebar-links li a {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  color: #ddd;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-links li a i {
+  margin-right: 15px;
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar-links li a:hover,
+.sidebar-links li a.active {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.admin-main {
+  flex: 1;
+  margin-left: 250px;
+  padding: 30px;
+  transition: all 0.3s ease;
+}
+
+.admin-page {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: var(--card-shadow);
+  min-height: calc(100vh - 60px);
+}
+
+.admin-mobile-header {
+  display: none;
+  background: white;
+  padding: 15px 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 1004;
+}
+
+/* Responsive Admin Layout */
+@media (max-width: 768px) {
+  .admin-sidebar {
+    left: -250px;
+  }
+  
+  .admin-sidebar.open {
+    left: 0;
+  }
+
+  .admin-main {
+    margin-left: 0;
+    margin-top: 60px;
+    padding: 15px;
+  }
+  
+  .admin-mobile-header {
+    display: flex;
+  }
+}
+
+/* Admin Gallery Masonry */
+.admin-gallery-grid {
+  display: block;
+  column-count: 4;
+  column-gap: 1rem;
+}
+
+.admin-gallery-item {
+  break-inside: avoid;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 1rem;
+  background: white;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+  .admin-gallery-grid {
+    column-count: 3;
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-gallery-grid {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-gallery-grid {
+    column-count: 1;
+  }
+}

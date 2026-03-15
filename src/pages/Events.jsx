@@ -1,51 +1,54 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+const EventCard = ({ event, showViewDetails = true, index, t, onOpenModal }) => (
+  <div className={`event-card ${index % 2 === 0 ? 'reveal-left' : 'reveal-right'}`} onClick={() => onOpenModal(event)}>
+    <div className="event-date">
+      <span className="day">{event.day}</span>
+      <span className="month">{event.month}</span>
+    </div>
+    <div className="event-details">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px' }}>
+        <div>
+          <span className="event-tag">{t(event.tag)}</span>
+          <h4 style={{ margin: '5px 0 10px 0' }}>{event.title.includes('event_') ? t(`${event.title}_title`) : event.title}</h4>
+        </div>
+        {showViewDetails && (
+          <span className="event-tag" style={{ background: 'transparent', border: '1px solid var(--primary-color)', color: 'var(--primary-color)' }}>
+            {t('btn_view_details')} <i className="fa-solid fa-arrow-right"></i>
+          </span>
+        )}
+      </div>
+      <p style={{ marginBottom: '15px', color: '#666' }}>
+        {event.short_desc.includes('event_') ? t(`${event.short_desc}_short_desc`) : event.short_desc}
+      </p>
+      {event.image && (
+        <img
+          src={event.image}
+          alt="Event Thumbnail"
+          style={{ width: '100%', height: 'auto', maxHeight: '300px', objectFit: 'contain', borderRadius: '8px', border: '1px solid #eee', backgroundColor: '#f5f5f5' }}
+        />
+      )}
+    </div>
+  </div>
+)
 
 function Events() {
   const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState(null)
+  
+  const [upcomingEvents, setUpcomingEvents] = useState([])
+  const [pastEvents, setPastEvents] = useState([])
 
-  const upcomingEvents = [
-    {
-      key: 'event_1',
-      day: '25',
-      month: 'NOV',
-      tag: 'academic',
-      image: '/assets/images/image5.jpg',
-    },
-    {
-      key: 'event_2',
-      day: '18',
-      month: 'DEC',
-      tag: 'tag_sports',
-      image: '/assets/images/3.jpg',
-    },
-    {
-      key: 'event_3',
-      day: '22',
-      month: 'DEC',
-      tag: 'scouts',
-      image: '/assets/images/image13.jpg',
-    },
-  ]
-
-  const pastEvents = [
-    {
-      key: 'past_event_1',
-      day: '10',
-      month: 'NOV',
-      tag: 'celebration',
-      image: '/assets/images/events.jpg',
-    },
-    {
-      key: 'past_event_2',
-      day: '25',
-      month: 'OCT',
-      tag: 'sports',
-      image: '/assets/images/slider_bg_1.jpg',
-    },
-  ]
+  useEffect(() => {
+    fetch('http://localhost:5000/api/events')
+      .then(res => res.json())
+      .then(data => {
+        setUpcomingEvents(data.upcomingEvents || [])
+        setPastEvents(data.pastEvents || [])
+      })
+      .catch(err => console.error("Error fetching events:", err))
+  }, [])
 
   const openModal = (event) => {
     setSelectedEvent(event)
@@ -57,34 +60,6 @@ function Events() {
     setSelectedEvent(null)
   }
 
-  const EventCard = ({ event, showViewDetails = true, index }) => (
-    <div className={`event-card ${index % 2 === 0 ? 'reveal-left' : 'reveal-right'}`} onClick={() => openModal(event)}>
-      <div className="event-date">
-        <span className="day">{event.day}</span>
-        <span className="month">{event.month}</span>
-      </div>
-      <div className="event-details">
-        <span className="event-tag">{t(event.tag)}</span>
-        <h4>{t(`${event.key}_title`)}</h4>
-        <p>{t(`${event.key}_short_desc`)}</p>
-        <img
-          src={event.image}
-          alt="Event Thumbnail"
-          style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '5px', marginTop: '10px' }}
-        />
-        {showViewDetails && (
-          <>
-            <br />
-            <span className="event-tag" style={{ cursor: 'pointer' }}>
-              <a href="javascript:void(0);">
-                {t('btn_view_details')} <i className="fa-solid fa-arrow-right"></i>
-              </a>
-            </span>
-          </>
-        )}
-      </div>
-    </div>
-  )
 
   return (
     <>
@@ -98,7 +73,7 @@ function Events() {
 
           <div className="events-container">
             {upcomingEvents.map((event, index) => (
-              <EventCard key={event.key} event={event} index={index} />
+              <EventCard key={event.key} event={event} index={index} t={t} onOpenModal={openModal} />
             ))}
           </div>
 
@@ -108,34 +83,37 @@ function Events() {
 
           <div className="events-container">
             {pastEvents.map((event, index) => (
-              <EventCard key={event.key} event={event} showViewDetails={false} index={index} />
+              <EventCard key={event.key} event={event} showViewDetails={false} index={index} t={t} onOpenModal={openModal} />
             ))}
           </div>
         </div>
       </section>
 
       {modalOpen && selectedEvent && (
-        <div className="modal" style={{ display: 'block' }} onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal show" onClick={closeModal} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ margin: '0', animation: 'animatetop 0.4s' }}>
             <div className="modal-header">
-              <h4>{t(`${selectedEvent.key}_title`)}</h4>
+              <h4 style={{ margin: 0, color: 'white' }}>{selectedEvent.title.includes('event_') ? t(`${selectedEvent.title}_title`) : selectedEvent.title}</h4>
               <span className="close-btn" onClick={closeModal}>&times;</span>
             </div>
             <div className="modal-body">
+              <div style={{ display: 'flex', gap: '20px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                <div className="event-date" style={{ minWidth: '100px', height: 'fit-content' }}>
+                  <span className="day">{selectedEvent.day}</span>
+                  <span className="month">{selectedEvent.month}</span>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <span className="event-tag">{t(selectedEvent.tag)}</span>
+                  <p style={{ marginTop: '10px', fontSize: '1rem', lineHeight: '1.6' }}>
+                    {selectedEvent.details.includes('event_') ? t(`${selectedEvent.details}_details`) : selectedEvent.details}
+                  </p>
+                </div>
+              </div>
               <img
-                className="modal-image"
                 src={selectedEvent.image}
                 alt="Event Image"
+                style={{ width: '100%', maxHeight: '500px', objectFit: 'contain', borderRadius: '8px', backgroundColor: '#f9f9f9' }}
               />
-              <p>
-                <span className="event-tag" style={{ marginRight: '10px' }}>
-                  {selectedEvent.day} {selectedEvent.month}
-                </span>
-                <span className="event-tag">{t(selectedEvent.tag)}</span>
-              </p>
-              <div className="modal-details">
-                <p>{t(`${selectedEvent.key}_details`)}</p>
-              </div>
             </div>
           </div>
         </div>

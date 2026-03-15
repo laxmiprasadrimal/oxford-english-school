@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 function Gallery() {
@@ -6,29 +6,14 @@ function Gallery() {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [currentImage, setCurrentImage] = useState('')
 
-  const images = [
-    '/assets/images/image1.jpg',
-    '/assets/images/image2.jpg',
-    '/assets/images/image3.jpg',
-    '/assets/images/image4.jpg',
-    '/assets/images/image5.jpg',
-    '/assets/images/image6.jpg',
-    '/assets/images/image7.jpg',
-    '/assets/images/image8.jpg',
-    '/assets/images/image9.jpg',
-    '/assets/images/image11.jpg',
-    '/assets/images/image12.jpg',
-    '/assets/images/image13.jpg',
-    '/assets/images/image14.jpg',
-    '/assets/images/unpic1.jpeg',
-    '/assets/images/unpic2.jpeg',
-    '/assets/images/unpic3.jpeg',
-    '/assets/images/unpic4.jpeg',
-    '/assets/images/unpic5.jpeg',
-    '/assets/images/unpic6.jpeg',
-    '/assets/images/unpic7.jpeg',
-    '/assets/images/unpic8.jpeg',
-  ]
+  const [images, setImages] = useState([])
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/gallery')
+      .then(res => res.json())
+      .then(data => setImages(data || []))
+      .catch(err => console.error("Error fetching gallery:", err))
+  }, [])
 
   const openLightbox = (image) => {
     setCurrentImage(image)
@@ -50,13 +35,13 @@ function Gallery() {
           </p>
 
           <div className="gallery-grid">
-            {images.map((image, index) => (
+            {images.map((item, index) => (
               <div
-                key={index}
+                key={item.id}
                 className={`gallery-item reveal-scale delay-${(index % 5) + 1}`}
-                onClick={() => openLightbox(image)}
+                onClick={() => openLightbox(item.image)}
               >
-                <img src={image} alt={`Gallery image ${index + 1}`} />
+                <img src={item.image} alt={item.title || `Gallery image ${index + 1}`} />
                 <div className="overlay">
                   <i className="fas fa-search-plus"></i>
                 </div>

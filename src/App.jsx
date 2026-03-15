@@ -18,6 +18,15 @@ import Teachers from './pages/Teachers'
 import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 
+// Admin Imports
+import ProtectedRoute from './components/admin/ProtectedRoute'
+import AdminLayout from './components/admin/AdminLayout'
+import Login from './pages/admin/Login'
+import Dashboard from './pages/admin/Dashboard'
+import EventManagement from './pages/admin/EventManagement'
+import GalleryManagement from './pages/admin/GalleryManagement'
+import ProfileManagement from './pages/admin/ProfileManagement'
+
 function App() {
   const [loading, setLoading] = useState(true)
   const location = useLocation()
@@ -40,17 +49,36 @@ function App() {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible')
-          // Once visible, we can stop observing this specific element
           observer.unobserve(entry.target)
         }
       })
     }, observerOptions)
 
-    // Target all elements with reveal classes
-    const revealElements = document.querySelectorAll('[class*="reveal"]')
-    revealElements.forEach(el => observer.observe(el))
+    // Initial observe
+    document.querySelectorAll('[class*="reveal"]').forEach(el => observer.observe(el))
 
-    return () => observer.disconnect()
+    // Watch for new elements dynamically added (like Data fetched from API)
+    const mutationObserver = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+          if (node.nodeType === 1) { // Element Node
+            if (node.className && typeof node.className === 'string' && node.className.includes('reveal')) {
+              observer.observe(node)
+            }
+            if (node.querySelectorAll) {
+              node.querySelectorAll('[class*="reveal"]').forEach(el => observer.observe(el))
+            }
+          }
+        })
+      })
+    })
+
+    mutationObserver.observe(document.body, { childList: true, subtree: true })
+
+    return () => {
+      observer.disconnect()
+      mutationObserver.disconnect()
+    }
   }, [loading, location.pathname]) // Re-run on route change or after loading
 
   if (loading) {
@@ -59,8 +87,10 @@ function App() {
 
   return (
     <>
-      <Header />
       <ScrollToTopReset />
+      {/* Hide Header/Footer/WhatsApp if routing to /admin */}
+      {!location.pathname.startsWith('/admin') && <Header />}
+      
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -72,12 +102,31 @@ function App() {
           <Route path="/buses" element={<Buses />} />
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/contact" element={<Contact />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<Login />} />
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<Dashboard />} />
+            <Route path="events" element={<EventManagement />} />
+            <Route path="gallery" element={<GalleryManagement />} />
+            <Route path="profile" element={<ProfileManagement />} />
+          </Route>
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-      <Footer />
-      <ScrollToTop />
-      <WhatsAppButton />
+
+      {!location.pathname.startsWith('/admin') && (
+        <>
+          <Footer />
+          <ScrollToTop />
+          <WhatsAppButton />
+        </>
+      )}
     </>
 
   )
