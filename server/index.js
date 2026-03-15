@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
@@ -8,8 +9,9 @@ const fs = require('fs');
 const db = require('./database');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 const SECRET_KEY = process.env.JWT_SECRET || 'oxford_secret_12345';
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 // Middleware
 app.use(cors());
@@ -64,7 +66,7 @@ app.get('/api/events', (req, res) => {
       tag: r.tag,
       day: r.day,
       month: r.month,
-      image: r.image.startsWith('http') || r.image.startsWith('/') ? r.image : `http://localhost:${PORT}/uploads/${r.image}`,
+      image: r.image.startsWith('http') || r.image.startsWith('/') ? r.image : `${BASE_URL}/uploads/${r.image}`,
       is_past: Boolean(r.is_past)
     }));
     
@@ -82,7 +84,7 @@ app.get('/api/gallery', (req, res) => {
     const formattedGallery = rows.map(r => ({
       id: r.id,
       title: r.title,
-      image: r.image.startsWith('http') || r.image.startsWith('/') ? r.image : `http://localhost:${PORT}/uploads/${r.image}`,
+      image: r.image.startsWith('http') || r.image.startsWith('/') ? r.image : `${BASE_URL}/uploads/${r.image}`,
     }));
     res.json(formattedGallery);
   });
@@ -230,5 +232,5 @@ app.delete('/api/gallery/:id', authenticateToken, (req, res) => {
 
 
 app.listen(PORT, () => {
-  console.log(`Backend Server running on http://localhost:${PORT}`);
+  console.log(`Backend Server running on port ${PORT}`);
 });
